@@ -7,9 +7,9 @@ __pycache__/
 
 # Ignore static files (local paths can be relative)
 # Adjust the paths below according to your project structure
-/static/
-/static/products/
-/static/user_pictures/
+
+myadmin/static/products/
+myadmin/static/user_pictures/
 
 # Ignore log files
 *.log
