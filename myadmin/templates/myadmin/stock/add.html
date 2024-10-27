@@ -1,0 +1,84 @@
+{% extends 'myadmin/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Add Product Stock</div>
+                </div>
+                <form method="GET" action="{% url 'addStock' %}">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="search" class="form-label">Search Product</label>
+                                        <div class="input-group">
+                                            <input type="text" name="search" id="search" class="form-control"
+                                                   placeholder="Enter product name" value="{{ request.GET.search }}">
+                                            <button type="submit" class="btn btn-secondary">Search</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                {% if not products %}
+                    <p class="text-danger text-center">No products found. Please refine your search or add a new
+                        product.</p>
+                {% else %}
+
+                    <form method="POST" novalidate>
+                        {% csrf_token %}
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="product">Product</label>
+                                <select class="form-control input-square {% if form.errors.product %}is-invalid{% endif %}"
+                                        id="product" name="product" required>
+                                    <option value="" disabled selected>Select a product</option>
+                                    {% for product in products %}
+                                        <option value="{{ product.id }}"
+                                                {% if product.id == form.product.value %}selected{% endif %}>
+                                            {{ product.product_name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+
+                                {% if form.errors.product %}
+                                    <div class="invalid-feedback">
+                                        {{ form.errors.product }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group">
+                                <label for="stock_quantity">Quantity</label>
+                                <input name="stock_quantity" type="number"
+                                       class="form-control input-square {% if form.errors.stock_quantity %}is-invalid{% endif %}"
+                                       id="stock_quantity" placeholder="Enter the product quantity" min="1" step="1" required>
+
+                                {% if form.errors.stock_quantity %}
+                                    <div class="invalid-feedback">
+                                        {{ form.errors.stock_quantity }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                        </div>
+
+                          <div class="card-footer text-right">
+
+                            <button type="button" class="btn btn-danger" onclick="window.history.back(); return false;">
+                                Cancel
+                            </button>
+                              <button type="submit" class="btn btn-success">Submit</button>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,238 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block content %}
+
+<section class="section my-5" id="products">
+    <div class="container">
+        <!-- Section Heading -->
+        <div class="text-center mb-4">
+            <h2>Our Latest Products</h2>
+            <span>{{ products.paginator.count }} Results On {{ "now"|date:"d M, Y" }}</span>
+        </div>
+
+        <!-- Filter and Search -->
+        <div class="row mb-4 align-items-center g-3">
+            <div class="col-md-2 text-center">
+                <button id="toggleFilter" class="btn btn-outline-secondary w-100" aria-label="Filter Products">
+                    Filter Products
+                </button>
+            </div>
+            <div class="col-md-10">
+                <form method="GET" action="" class="d-flex">
+                    <div class="input-group">
+                        <input type="text" name="search" class="form-control" placeholder="Search Products..."
+                               aria-label="Search Products" value="{{ search_query }}">
+                        <button class="btn btn-outline-info" type="submit" aria-label="Search">Search</button>
+                    </div>
+                    {% for category in selected_categories %}
+                        <input type="hidden" name="category" value="{{ category }}">
+                    {% endfor %}
+                    {% if start_price %}
+                        <input type="hidden" name="startPrice" value="{{ start_price }}">
+                    {% endif %}
+                    {% if end_price %}
+                        <input type="hidden" name="endPrice" value="{{ end_price }}">
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+
+        <!-- Products Count -->
+        <div class="d-flex align-items-center justify-content-center my-4">
+            <hr class="flex-grow-1">
+            <span class="mx-3 text-muted">Products Result: {{ products.paginator.count }}</span>
+            <hr class="flex-grow-1">
+        </div>
+
+        <div class="row">
+            {% for product in products %}
+                <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+                    <div class="item shadow-sm">
+                        <div class="thumb position-relative">
+                            <div class="hover-content d-flex align-items-center justify-content-center">
+                                <ul class="list-unstyled d-flex gap-2">
+                                    <li><a href="{% url 'product_detail' product.id %}" class="text-dark"
+                                           aria-label="View Product"><i class="fa fa-eye"></i></a></li>
+                                    <li><a href="#" class="text-warning" aria-label="Add to Favorites"><i
+                                            class="fa fa-star"></i></a></li>
+                                    <li>
+                                        {% if user.is_authenticated %}
+                                            <a href="#" class="text-primary add-to-cart-btn"
+                                               data-product-id="{{ product.id }}" aria-label="Add to Cart">
+                                                <i class="fa fa-shopping-cart"></i>
+                                            </a>
+                                        {% else %}
+                                            <a href="{% url 'user_login' %}" class="text-primary"
+                                               aria-label="Login to Add to Cart">
+                                                <i class="fa fa-shopping-cart"></i>
+                                            </a>
+                                        {% endif %}
+                                    </li>
+                                </ul>
+                            </div>
+                            <img src="{{ product.thumbnail.url }}" alt="{{ product.product_name|slice:":10" }} Thumbnail"
+                                 class="img-fluid rounded" loading="lazy">
+                        </div>
+                        <div class="down-content p-3">
+                            <h4 class="mb-1">{{ product.product_name|slice:":10" }}...</h4>
+                            <div class="pricing mb-2">
+                                <span class="text-info font-weight-bold">${{ product.final_price|floatformat:2 }}</span>
+                                {% if product.discount_rate %}
+                                    <span class="text-muted"><s>${{ product.price }}</s></span>
+                                    <span class="text-success font-weight-bold">{{ product.discount_rate }}% off</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12 text-center">
+                    <p class="text-muted">No products found matching your criteria.</p>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Responsive Pagination -->
+        {% if products.paginator.count > 10 %}
+            <div class="d-flex justify-content-center mt-4">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        {% if products.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?{{ query_params }}&page={{ products.previous_page_number }}"
+                                   aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if products.number > 3 %}
+                            <li class="page-item"><a class="page-link" href="?{{ query_params }}&page=1">1</a></li>
+                            {% if products.number > 4 %}
+                                <li class="page-item disabled"><a class="page-link">...</a></li>
+                            {% endif %}
+                        {% endif %}
+                        {% for page_num in products.paginator.page_range %}
+                            {% if page_num >= products.number|add:"-2" and page_num <= products.number|add:"2" %}
+                                <li class="page-item {% if products.number == page_num %}active{% endif %}">
+                                    <a class="page-link"
+                                       href="?{{ query_params }}&page={{ page_num }}">{{ page_num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if products.number < products.paginator.num_pages|add:"-2" %}
+                            {% if products.number < products.paginator.num_pages|add:"-3" %}
+                                <li class="page-item disabled"><a class="page-link">...</a></li>
+                            {% endif %}
+                            <li class="page-item">
+                                <a class="page-link"
+                                   href="?{{ query_params }}&page={{ products.paginator.num_pages }}">{{ products.paginator.num_pages }}</a>
+                            </li>
+                        {% endif %}
+                        {% if products.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?{{ query_params }}&page={{ products.next_page_number }}"
+                                   aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        {% endif %}
+
+    </div>
+</section>
+
+<!-- Filter Drawer -->
+<div class="filter-drawer p-4" id="filterDrawer" role="dialog" aria-hidden="true">
+    <form id="filterForm" method="GET">
+        <div class="mb-3">
+            <label for="category" class="form-label">Category:</label>
+            <select class="form-select" id="category" name="category" aria-label="Select a category">
+                <option value="">All Categories</option>
+                {% for category in categories %}
+                    <option value="{{ category.id }}" {% if category.id|stringformat:"s" in selected_categories %}selected{% endif %}>{{ category.category_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Price:</label>
+            <input type="number" name="startPrice" class="form-control mb-2" id="startPrice" placeholder="Start Price" min="0" value="{{ start_price }}">
+            <input type="number" name="endPrice" class="form-control" id="endPrice" placeholder="End Price" min="0" value="{{ end_price }}">
+        </div>
+        <div class="d-flex justify-content-between mt-4">
+            <button type="button" class="btn btn-danger" id="cancelButton">Cancel</button>
+            <a href="?"><button type="button" class="btn btn-secondary">Reset</button></a>
+            <button type="submit" class="btn btn-success">Filter</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const toggleFilter = document.getElementById('toggleFilter');
+        const filterDrawer = document.getElementById('filterDrawer');
+        const cancelButton = document.getElementById('cancelButton');
+
+        const openDrawer = () => {
+            filterDrawer.classList.add('show');
+            document.body.classList.add('scroll-locked');
+        };
+
+        const closeDrawer = () => {
+            filterDrawer.classList.remove('show');
+            document.body.classList.remove('scroll-locked');
+        };
+
+        toggleFilter?.addEventListener('click', () => {
+            filterDrawer.classList.contains('show') ? closeDrawer() : openDrawer();
+        });
+
+        cancelButton?.addEventListener('click', closeDrawer);
+    });
+</script>
+
+<style>
+    .thumb {
+        height: 250px;
+        width: 100%;
+        overflow: hidden;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .thumb:hover {
+        transform: translateY(-5px);
+        box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .thumb img {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+        display: block;
+        border-radius: 16px;
+    }
+
+    .filter-drawer {
+        background: #ffc07c;
+        position: fixed;
+        top: 0;
+        left: -400px;
+        width: 300px;
+        height: 100%;
+        z-index: 1000;
+        transition: left 0.4s;
+    }
+
+    .filter-drawer.show {
+        left: 0;
+    }
+
+    .scroll-locked {
+        overflow: hidden;
+    }
+</style>
+
+{% endblock %}

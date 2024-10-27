@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful - Thank You</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        @keyframes checkmark {
+            0% {
+                stroke-dashoffset: 100;
+            }
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .checkmark {
+            animation: checkmark 0.8s ease-in-out forwards;
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+        }
+
+        .success-card {
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            box-shadow: 20px 20px 60px #d9d9d9,
+                       -20px -20px 60px #ffffff;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: confetti 5s ease-in-out infinite;
+        }
+
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
+    <!-- Animated confetti background -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden" id="confetti-container"></div>
+
+    <div class="success-card max-w-lg w-full mx-auto rounded-2xl p-8 relative">
+        <!-- Success checkmark -->
+        <div class="mb-8 flex justify-center">
+            <svg class="w-24 h-24" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="#4ade80" stroke-width="7"/>
+                <path class="checkmark" fill="none" stroke="#4ade80" stroke-width="7" d="M25,50 L45,70 L75,30"/>
+            </svg>
+        </div>
+
+        <div class="text-center space-y-4">
+            <h1 class="text-3xl font-bold text-gray-800">Payment Successful!</h1>
+            <p class="text-gray-600">Thank you for your payment, <span id="cardHolder" class="font-medium"></span></p>
+
+            <div class="bg-green-50 rounded-lg p-4 mt-6">
+                <div class="flex items-center justify-center space-x-2">
+                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <p class="text-green-700">Transaction ID: <span id="transactionId" class="font-mono"></span></p>
+                </div>
+            </div>
+
+            <div class="mt-8 space-y-4">
+                <p class="text-gray-600">You will receive a confirmation email shortly.</p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center mt-6">
+                    <a href="/" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors duration-200">
+                        Return Home
+                    </a>
+                    <a  href="{% url 'orders' %}" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-indigo-600 bg-indigo-100 hover:bg-indigo-200 transition-colors duration-200">
+                        View Orders
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get card holder name from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const cardHolder = urlParams.get('card_holder');
+        if (cardHolder) {
+            document.getElementById('cardHolder').textContent = cardHolder;
+        }
+
+        // Generate random transaction ID
+        const transactionId = 'TXN' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        document.getElementById('transactionId').textContent = transactionId;
+
+        // Create confetti animation
+        function createConfetti() {
+            const colors = ['#EF4444', '#3B82F6', '#10B981', '#F59E0B', '#6366F1'];
+            const container = document.getElementById('confetti-container');
+
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                confetti.style.animationDelay = (Math.random() * 2) + 's';
+                container.appendChild(confetti);
+            }
+        }
+
+        // Initialize confetti
+        createConfetti();
+    </script>
+</body>
+</html>

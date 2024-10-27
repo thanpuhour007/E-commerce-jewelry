@@ -1,0 +1,55 @@
+{% extends 'shop/base.html' %}
+{% block content %}
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-12 text-center">
+                <div class="d-flex align-items-center justify-content-center">
+                    <hr class="flex-grow-1 border-secondary">
+                    <h2 class="mx-3 text-muted">Your Orders</h2>
+                    <hr class="flex-grow-1 border-secondary">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        {% if orders %}
+            <div class="table-responsive">
+                <table id="ordersTable" class="table table-bordered table-hover">
+                    <thead class="thead-light">
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Status</th>
+                        <th>Total Amount</th>
+                        <th>Order At</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td>{{ order.id }}</td>
+                            <td>{{ order.status }}</td>
+                            <td>${{ order.total_amount }}</td>
+                            <td>{{ order.created_at }}</td>
+                            <td class="text-center">
+                                <a href="{% url 'customer_order_details' order.id %}" class="btn btn-primary btn-sm">View
+                                    Details</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center" role="alert">
+                You have no orders yet.
+            </div>
+        {% endif %}
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#ordersTable').DataTable();
+        });
+    </script>
+{% endblock %}

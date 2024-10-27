@@ -1,0 +1,47 @@
+{% extends 'myadmin/base.html' %}
+{% load static %}
+{% block content %}
+ <div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Edit Product Stock</h3>
+                </div>
+                <form method="POST" novalidate>
+                    {% csrf_token %}
+                    <div class="card-body">
+                        <!-- Product Name -->
+                        <div class="form-group">
+                            <span for="product_name">Product Name : <h1>{{ stock.product.product_name }}</h1></span>
+                        </div>
+
+                        <!-- Quantity Input -->
+                        <div class="form-group">
+                            <label for="stock_quantity">Quantity</label>
+                            <input name="stock_quantity" type="number"
+                                   class="form-control input-square {% if form.errors.stock_quantity %}is-invalid{% endif %}"
+                                   id="stock_quantity" placeholder="Enter the product quantity" min="1" step="1" value="{{ stock.stock_quantity }}" required>
+                            {% if form.errors.stock_quantity %}
+                                <div class="invalid-feedback">
+                                    {{ form.errors.stock_quantity }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="card-footer text-right">
+
+                        <button type="button" class="btn btn-danger" onclick="window.history.back(); return false;">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-success">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

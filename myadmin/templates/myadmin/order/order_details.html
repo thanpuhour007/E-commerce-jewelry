@@ -1,0 +1,48 @@
+{% extends 'myadmin/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container my-5">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Order Details</h3>
+                </div>
+                <div class="card-body">
+                    <h4>Order #{{ order.id }} Details</h4>
+                    <ul class="list-group mb-3">
+                        <li class="list-group-item"><strong>User:</strong> {{ order.user.username }}</li>
+                        <li class="list-group-item"><strong>Status:</strong> {{ order.status }}</li>
+                        <li class="list-group-item"><strong>Total Amount:</strong> ${{ order.total_amount }}</li>
+                        <li class="list-group-item"><strong>Created At:</strong> {{ order.created_at }}</li>
+                    </ul>
+
+                    <h5>Order Items</h5>
+                    {% if order.order_items.all %}
+                        <ul class="list-group">
+                            {% for item in order.order_items.all %}
+                                <li class="list-group-item">
+                                    <div class="row">
+                                        <div class="col-md-4"><strong>Product:</strong> {{ item.product.product_name }}
+                                        </div>
+                                        <div class="col-md-2"><strong>Quantity:</strong> {{ item.quantity }}</div>
+                                        <div class="col-md-3"><strong>Price at Order:</strong>
+                                            ${{ item.price_at_order }}</div>
+                                        <div class="col-md-3"><strong>Total Price:</strong> ${{ item.total_price }}
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="alert alert-warning text-center mt-3" role="alert">
+                            No items found for this order.
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer text-left">
+                    <button class="btn btn-danger" onclick="window.history.back(); return false;">Back ...</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,180 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        .payment-container {
+            background: linear-gradient(145deg, #ffffff, #f5f5f5);
+            box-shadow: 20px 20px 60px #d9d9d9,
+            -20px -20px 60px #ffffff;
+        }
+
+        .card-element {
+            padding: 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            background-color: white;
+            transition: all 0.3s ease;
+        }
+
+        .card-element:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+        }
+
+        .submit-button {
+            background: linear-gradient(145deg, #4f46e5, #4338ca);
+            transition: all 0.3s ease;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(79, 70, 229, 0.1);
+        }
+
+        .cancel-button {
+            background: linear-gradient(145deg, #ff3636, #ff3d3d);
+            transition: all 0.3s ease;
+        }
+
+        .cancel-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(79, 70, 229, 0.1);
+        }
+
+        #card-errors {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-md mx-auto payment-container p-8 rounded-2xl">
+        <div class="flex items-center justify-between mb-8">
+            <h2 class="text-2xl font-bold text-gray-800">Checkout</h2>
+            <div class="bg-indigo-50 px-4 py-2 rounded-lg">
+                <p class="text-indigo-700 font-medium">Total: ${{ order.total_amount }}</p>
+            </div>
+        </div>
+
+        <form id="payment-form" class="space-y-6">
+            <div>
+                <label for="cardholder-name" class="block text-sm font-medium text-gray-700 mb-2">
+                    Cardholder Name
+                </label>
+                <input
+                        type="text"
+                        id="cardholder-name"
+                        name="card_holder"
+                        class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+                        placeholder="Name on Card"
+                        required
+                >
+            </div>
+
+            <div>
+                <label for="card-element" class="block text-sm font-medium text-gray-700 mb-2">
+                    Card Details
+                </label>
+                <div id="card-element" class="card-element"></div>
+                <div id="card-errors" role="alert"></div>
+            </div>
+
+            <button
+                    type="submit"
+                    id="submit-button"
+                    class="submit-button w-full py-3 px-4 rounded-lg text-white font-medium"
+            >
+                Pay ${{ order.total_amount }}
+            </button>
+            <hr/>
+            <button
+                    type="submit"
+                    class="cancel-button w-full py-3 px-4 rounded-lg text-white font-medium"
+                    onclick="window.history.back(); return false;"
+            >
+                Cancel
+            </button>
+        </form>
+
+        <div class="mt-6 flex items-center justify-center space-x-4">
+            <img src="{% static 'shop/assets/my-images/logo007_64.ico' %}" alt="Secure payment" class="h-5">
+            <span class="text-sm text-gray-500">ABA Coming Soon ~ 🙂</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    var stripe = Stripe('{{ STRIPE_PUBLISHABLE_KEY }}');
+    var elements = stripe.elements();
+
+    var style = {
+        base: {
+            color: "#1f2937",
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+            fontSmoothing: "antialiased",
+            fontSize: "16px",
+            "::placeholder": {
+                color: "#6b7280"
+            },
+            padding: "16px"
+        },
+        invalid: {
+            color: "#ef4444",
+            iconColor: "#ef4444"
+        }
+    };
+
+    var card = elements.create('card', {style: style});
+    card.mount('#card-element');
+
+    card.on('change', function (event) {
+        var displayError = document.getElementById('card-errors');
+        if (event.error) {
+            displayError.textContent = event.error.message;
+        } else {
+            displayError.textContent = '';
+        }
+    });
+
+    var form = document.getElementById('payment-form');
+    var submitButton = document.getElementById('submit-button');
+
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<span class="inline-block animate-spin mr-2">↻</span> Processing...';
+
+        var cardholderName = document.getElementById('cardholder-name').value;
+
+        stripe.confirmCardPayment('{{ client_secret }}', {
+            payment_method: {
+                card: card,
+                billing_details: {
+                    name: cardholderName
+                }
+            }
+        }).then(function (result) {
+            if (result.error) {
+                submitButton.disabled = false;
+                submitButton.innerHTML = 'Pay ${{ order.total_amount }}';
+                var errorElement = document.getElementById('card-errors');
+                errorElement.textContent = result.error.message;
+            } else {
+                if (result.paymentIntent.status === 'succeeded') {
+                    var successUrl = "{% url 'payment_success' %}" + "?card_holder=" + encodeURIComponent(cardholderName);
+                    window.location.href = successUrl;
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

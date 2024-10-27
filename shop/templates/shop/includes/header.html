@@ -1,0 +1,134 @@
+{% load static %}
+<header class="header-area header-sticky">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light font-weight-bold py-3 shadow-sm">
+        <div class="container">
+            <!-- Brand Logo -->
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img src="{% static 'shop/assets/my-images/logo007_64.ico' %}" alt="Logo" class="img-fluid">
+            </a>
+
+            <!-- Navbar Toggler for Mobile View -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navbar Links -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    {% with current_url=request.resolver_match.url_name %}
+                        <!-- Home Link -->
+                        <li class="nav-item">
+                            <a href="{% url 'home' %}"
+                               class="nav-link {% if current_url == 'home' %}active fw-bold border-bottom border-2 border-success{% endif %}">
+                                Home
+                            </a>
+                        </li>
+
+                        <!-- Products Link -->
+                        <li class="nav-item">
+                            <a href="{% url 'products' %}"
+                               class="nav-link {% if current_url == 'products' %}active fw-bold border-bottom border-2 border-success{% endif %}">
+                                Products
+                            </a>
+                        </li>
+
+                        <!-- Cart Link -->
+                        <li class="nav-item">
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'cart' %}"
+                                   class="nav-link {% if current_url == 'cart' %}active fw-bold border-bottom border-2 border-success{% endif %}">
+                                    Cart
+                                    {% if cart_item_count > 0 %}
+                                        <span class="badge rounded-pill bg-success">{{ cart_item_count }}</span>
+                                    {% endif %}
+                                </a>
+                            {% else %}
+                                <a href="{% url 'user_login' %}"
+                                   class="nav-link {% if current_url == 'user_login' %}active fw-bold border-bottom border-2 border-success{% endif %}">
+                                    Cart
+                                </a>
+                            {% endif %}
+                        </li>
+
+                        <!-- About Link -->
+                        <li class="nav-item">
+                            <a href="{% url 'about' %}"
+                               class="nav-link {% if current_url == 'about' %}active fw-bold border-bottom border-2 border-success{% endif %}">
+                                About
+                            </a>
+                        </li>
+
+                        <!-- Contact Link -->
+                        <li class="nav-item">
+                            <a href="{% url 'contact' %}"
+                               class="nav-link {% if current_url == 'contact' %}active fw-bold border-bottom border-2 border-success{% endif %}">
+                                Contact
+                            </a>
+                        </li>
+
+                        <!-- User Profile Dropdown -->
+                        {% if user.is_authenticated %}
+                            <li class="nav-item dropdown ms-3">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown"
+                                   role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <div class="me-2" style="width: 40px; height: 40px;">
+                                        {% if user.user_picture %}
+                                            <img class="rounded-circle w-100 h-100 object-fit-cover border border-primary"
+                                                 src="{{ user.user_picture.url }}"
+                                                 alt="{{ user.username }}'s profile picture">
+                                        {% else %}
+                                            <img class="rounded-circle w-100 h-100 object-fit-cover"
+                                                 src="{% static 'shop/assets/my-images/No-Image.png' %}"
+                                                 alt="Default profile picture">
+                                        {% endif %}
+                                    </div>
+                                    {{ user.username }}
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2"
+                                    aria-labelledby="userDropdown">
+                                    <li>
+                                        <a class="dropdown-item py-2" href="{% url 'profile' user.id %}">
+                                            <i class="bi bi-person-circle me-2"></i>Profile
+                                        </a>
+                                    </li>
+                                    <li>
+                                        {% if request.user.is_authenticated and request.user.orders.exists %}
+                                            <a class="dropdown-item py-2" href="{% url 'orders' %}">
+                                                <i class="bi bi-cart me-2"></i>Your Orders
+                                            </a>
+                                        {% else %}
+                                            <span class="dropdown-item py-2 text-muted">
+                                                <i class="bi bi-cart me-2"></i>No Orders Available
+                                            </span>
+                                        {% endif %}
+                                    </li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item py-2 text-danger" href="{% url 'user_logout' %}">
+                                            <i class="bi bi-box-arrow-right me-2"></i>Logout
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a href="{% url 'user_login' %}"
+                                   class="nav-link {% if current_url == 'user_login' %}active fw-bold border-bottom border-2 border-success{% endif %}">
+                                    Login
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% endwith %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<style>
+    .header-area {
+        position: relative;
+    }
+</style>

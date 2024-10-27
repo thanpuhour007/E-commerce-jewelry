@@ -1,0 +1,61 @@
+{% extends 'shop/base.html' %}
+{% block content %}
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-12 text-center">
+                <div class="d-flex align-items-center justify-content-center">
+                    <hr class="flex-grow-1 border-secondary">
+                    <h2 class="mx-3 text-muted">Order #{{ order.id }} Details</h2>
+                    <hr class="flex-grow-1 border-secondary">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="order-summary bg-light p-4 rounded shadow-sm">
+            <p><strong>Status:</strong> {{ order.status }}</p>
+            <p><strong>Total Amount:</strong> ${{ order.total_amount }}</p>
+            <p><strong>Order At:</strong> {{ order.created_at }}</p>
+        </div>
+
+        <h3 class="mt-4">Order Items</h3>
+        {% if order.order_items.all %}
+            <div class="table-responsive">
+                <table id="orderItemsTable" class="table table-bordered table-hover">
+                    <thead class="thead-light">
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Quantity</th>
+                        <th>Price at Order</th>
+                        <th>Total Price</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in order.order_items.all %}
+                        <tr>
+                            <td>{{ item.product.product_name }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>${{ item.price_at_order }}</td>
+                            <td>${{ item.total_price }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-warning text-center" role="alert">
+                No items found for this order.
+            </div>
+        {% endif %}
+
+        <div class="mt-4 text-center">
+            <a href="{% url 'orders' %}" class="btn btn-secondary">Back to Orders</a>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#orderItemsTable').DataTable();
+        });
+    </script>
+{% endblock %}

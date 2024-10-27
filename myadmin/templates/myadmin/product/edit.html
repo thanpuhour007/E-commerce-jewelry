@@ -1,0 +1,187 @@
+{% extends 'myadmin/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Edit Product</div>
+                </div>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="card-body">
+                        <!-- Category Field -->
+                        <div class="form-group">
+                            <label for="category">Category</label>
+                            <select class="form-control" id="category" name="category" required>
+                                {% for category in categories %}
+                                    <option value="{{ category.id }}"
+                                            {% if product.category.id == category.id %}selected{% endif %}>
+                                        {{ category.category_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Type Field -->
+                        <div class="form-group">
+                            <label for="type">Type</label>
+                            <select class="form-control" id="type" name="type" required>
+                                {% for type in types %}
+                                    <option value="{{ type.id }}"
+                                            {% if product.product_type.id == type.id %}selected{% endif %}>
+                                        {{ type.type_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Product Name Field -->
+                        <div class="form-group">
+                            <label for="product_name">Product Name</label>
+                            <input name="product_name" value="{{ product.product_name }}" type="text"
+                                   class="form-control input-square" id="product_name"
+                                   placeholder="Enter the product name" required>
+                        </div>
+
+                        <!-- Price Field -->
+                        <div class="form-group">
+                            <label for="price">Price</label>
+                            <input name="price" value="{{ product.price }}" type="number"
+                                   class="form-control input-square" id="price"
+                                   placeholder="Enter the product price" min="0.01" step="0.01" required>
+                        </div>
+
+                        <!-- Discount Rate Field -->
+                        <div class="form-group">
+                            <label for="discount_rate">Discount Rate (%)</label>
+                            <input name="discount_rate" value="{{ product.discount_rate }}" type="number"
+                                   class="form-control input-square"
+                                   id="discount_rate"
+                                   placeholder="Enter the discount rate" min="0" max="100" step="0.01">
+                        </div>
+                        <div class="form-check">
+                            <label for="product_status_public">Product Status</label><br/>
+
+                            <!-- Public option (True) -->
+                            <label class="form-radio-label" for="product_status_public">
+                                <input class="form-radio-input" type="radio" name="product_status"
+                                       id="product_status_public" value="True"
+                                        {% if product.product_status %} checked {% endif %}>
+                                <span class="form-radio-sign text-success">Public</span>
+                            </label>
+
+                            <!-- Private option (False) -->
+                            <label class="form-radio-label ml-3" for="product_status_private">
+                                <input class="form-radio-input" type="radio" name="product_status"
+                                       id="product_status_private" value="False"
+                                        {% if not product.product_status %} checked {% endif %}>
+                                <span class="form-radio-sign text-danger">Private</span>
+                            </label>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="thumbnail">Thumbnail</label>
+                            <input name="thumbnail" type="file" class="form-control-file" id="thumbnail"
+                                   accept="image/*">
+                            <div id="thumbnail-preview" class="mt-2 text-center">
+                                <img src="{{ product.thumbnail.url }}" class="img-thumbnail mt-2" width="150px">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="images">Additional Images</label>
+                            <input name="images" type="file" class="form-control-file" id="images" accept="image/*"
+                                   multiple>
+                            <div class="form-group">
+                                <button id="clear-images" class="btn btn-warning col-md-12" style="display: none;">
+                                    🔄
+                                </button>
+                            </div>
+                            <div id="image-preview" class="row mt-2 text-center">
+                                {% for image in product_images %}
+                                    <div class="col-md-3">
+                                        <img src="{{ image.image.url }}" class="img-thumbnail" width="150px">
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="comment">Description</label>
+                            <textarea name="description" class="form-control" id="comment"
+                                      rows="5" placeholder="Description">{{ product.description }}</textarea>
+                        </div>
+                    </div>
+                    <div class="card-footer text-right">
+                        <button class="btn btn-danger" onclick="window.history.back(); return false;">Cancel</button>
+                        <button class="btn btn-success" type="submit">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script>
+        function readThumbnail(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#thumbnail-preview').html(`
+                    <div class="position-relative d-inline-block">
+                        <img src="` + e.target.result + `" class="img-thumbnail" width="150px">
+                    </div>
+                `);
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function readMultipleImages(input) {
+            $('#image-preview').html('');
+            if (input.files && input.files.length > 0) {
+                $('#clear-images').show();
+
+                $.each(input.files, function (i, file) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        var imgElement = `
+                        <div class="col-md-3 mb-2 position-relative">
+                            <img src="` + e.target.result + `" class="img-thumbnail" width="150px">
+                        </div>
+                    `;
+                        $('#image-preview').append(imgElement);
+                    }
+
+                    reader.readAsDataURL(file);
+                });
+            } else {
+                $('#clear-images').hide();
+            }
+        }
+
+        $(document).ready(function () {
+            $('#thumbnail').change(function () {
+                readThumbnail(this);
+            });
+
+            $('#images').change(function () {
+                readMultipleImages(this);
+            });
+
+            $('#clear-images').click(function (e) {
+                e.preventDefault();
+                $('#image-preview').html('');
+                $('#images').val('');
+                $('#clear-images').hide();
+            });
+        });
+    </script>
+
+
+{% endblock %}

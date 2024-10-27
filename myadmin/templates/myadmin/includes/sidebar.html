@@ -1,0 +1,85 @@
+{% load static %}
+<div class="sidebar">
+    <div class="scrollbar-inner sidebar-wrapper">
+        <div class="user">
+            <div class="photo">
+                <img src="https://scontent-hkg1-2.xx.fbcdn.net/v/t39.30808-6/344362765_984789609185572_5192005879336952327_n.jpg?stp=cp6_dst-jpg&_nc_cat=104&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeGTEy_n36KBloH0NLjPtQsiReV_to6aAjRF5X-2jpoCNDLVq4NIPpSi_6Q3Fcue1gKU_r6KwUs7-MOYP41dBbDH&_nc_ohc=RptTe1uoRA0Q7kNvgGDh6Cq&_nc_zt=23&_nc_ht=scontent-hkg1-2.xx&_nc_gid=AE3C5cXmWANYss8EIvJY3DR&oh=00_AYDLLRKlrf6HGjBhpiSDOSYYYyQVe3rS-3EAxL9_OtoD2w&oe=67167619">
+            </div>
+            <div class="info">
+                <a class="#" data-toggle="collapse" href="#collapseExample" aria-expanded="true">
+								<span>
+									{{ request.user.username }}
+									<span class="user-level">Administrator</span>
+
+								</span>
+                </a>
+
+            </div>
+        </div>
+        <ul class="nav">
+            <li class="nav-item {% if request.resolver_match.url_name == 'myadmin' %}active{% endif %}">
+                <a href="{% url 'myadmin' %}" class="d-flex align-items-center">
+                    <span>Home</span>
+                    <img width="40" src="https://img.icons8.com/plasticine/100/exterior.png"
+                         alt="home"/>
+                    {#                    <span class="badge badge-success">5</span>#}
+                </a>
+            </li>
+            <li class="nav-item {% if request.resolver_match.url_name == 'users' %}active{% endif %}">
+                <a href="{% url 'users' %}" class="d-flex align-items-center">
+                    <span>Users</span>
+                    <img width="40" src="https://img.icons8.com/doodle/48/user.png" alt="user"/>
+                    <span class="badge badge-success">{{ users_count }}</span>
+                </a>
+            </li>
+            <li class="nav-item {% if request.resolver_match.url_name == 'category' %}active{% endif %}">
+                <a href="{% url 'category' %}" class="d-flex align-items-center">
+                    <span>Category</span>
+                    <img class="ml-2" width="40" src="https://img.icons8.com/keek/100/opened-folder.png"
+                         alt="Category Icon"/>
+                    <span class="badge badge-success ml-auto">{{ categories_count }}</span>
+                </a>
+            </li>
+            <li class="nav-item {% if request.resolver_match.url_name == 'type' %}active{% endif %}">
+                <a href="{% url 'type' %}" class="d-flex align-items-center">
+                    <span>Type</span>
+                    <img width="40" src="https://img.icons8.com/stickers/50/data-sheet.png" alt="data-sheet"/>
+                    <span class="badge badge-success ml-auto">{{ types_count }}</span>
+                </a>
+            </li>
+            <li class="nav-item {% if request.resolver_match.url_name == 'product' %}active{% endif %}">
+                <a href="{% url 'product' %}" class="d-flex align-items-center">
+                    <span>Products</span>
+                    <img width="40" src="https://img.icons8.com/color/48/engagement-ring--v1.png"
+                         alt="product"/>
+                    <span class="badge badge-success">{{ products_count }}</span>
+                </a>
+            </li>
+            <li class="nav-item {% if request.resolver_match.url_name == 'stock' %}active{% endif %}">
+                <a href="{% url 'stock' %}" class="d-flex align-items-center">
+                    <span>Products Stock</span>
+                    <img width="40" src="https://img.icons8.com/dusk/64/warehouse.png" alt="Products Stock"/>
+                    <span class="badge badge-success">{{ stocks_count }}</span>
+                </a>
+            </li>
+            <li class="nav-item {% if request.resolver_match.url_name == 'order' %}active{% endif %}">
+                <a href="{% url 'order' %}" class="d-flex align-items-center">
+                    <span>Order</span>
+                    <img width="40"
+                         src="https://img.icons8.com/external-flaticons-lineal-color-flat-icons/64/external-order-logistics-flaticons-lineal-color-flat-icons-3.png"
+                         alt="external-order-logistics-flaticons-lineal-color-flat-icons-3"/>
+                    <span class="badge badge-success">{{ orders_count }}</span>
+                </a>
+            </li>
+            <hr>
+            <a href="{% url 'exit' %}">
+                <li class="nav-item text-center">
+                    <button data-toggle="modal" data-target="#modalUpdate" class="btn btn-danger text-white w-75">
+                        <i class="la la-hand-pointer-o"></i>
+                        <p class="d-inline">EXIT</p>
+                    </button>
+                </li>
+            </a>
+        </ul>
+    </div>
+</div>

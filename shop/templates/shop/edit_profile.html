@@ -1,0 +1,131 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block content %}
+
+    <div class="container my-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex align-items-center justify-content-center">
+                    <hr class="flex-grow-1">
+                    <h2 class="mx-3 text-muted">Edit Profile</h2>
+                    <hr class="flex-grow-1">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-title text-uppercase">Profile Details</div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchAll"
+                               onchange="toggleAllInputs()">
+                        <label class="form-check-label" for="flexSwitchAll">Do You Want To Change All</label>
+                    </div>
+                </div>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="card-body">
+                        <!-- User Profile Picture -->
+                        <div class="form-group">
+                            <div class="form-check form-switch d-flex align-items-center">
+                                <input class="form-check-input me-2" type="checkbox" role="switch"
+                                       id="flexSwitchUserPicture" onchange="toggleInput('userPicture')">
+                                <label class="form-check-label" for="flexSwitchUserPicture">
+                                    {% if not user.user_picture %}
+                                        No profile image found. You can add one:
+                                    {% else %}
+                                        Do you want to change the picture:
+                                        <img width="80" src="{{ user.user_picture.url }}"
+                                             alt="{{ user.username }}"/>
+                                    {% endif %}
+                                </label>
+                            </div>
+                            <input name="user_picture" type="file" class="form-control input-square mt-3"
+                                   id="userPicture" hidden>
+                            <hr>
+                        </div>
+                        <!-- Username -->
+                        <div class="form-group">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch"
+                                       id="flexSwitchUsername" onchange="toggleInput('usernameInput')">
+                                <label class="form-check-label" for="flexSwitchUsername">Change
+                                    Username: {{ user.username }}</label>
+                            </div>
+                            <input name="username" type="text" class="form-control input-square mt-2"
+                                   id="usernameInput" placeholder="Enter New Username" hidden>
+                            <hr>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="form-group">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchEmail"
+                                       onchange="toggleInput('emailInput')">
+                                <label class="form-check-label" for="flexSwitchEmail">Change
+                                    Email: {{ user.email }}</label>
+                            </div>
+                            <input name="email" type="email" class="form-control input-square mt-2" id="emailInput"
+                                   placeholder="Enter New Email" hidden>
+                            <hr>
+                        </div>
+
+                        <!-- Phone Number -->
+                        <div class="form-group">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch"
+                                       id="flexSwitchPhoneNumber" onchange="toggleInput('PhoneNumberInput')">
+                                <label class="form-check-label" for="flexSwitchPhoneNumber">Change Phone
+                                    Number: {{ user.phone_number }}</label>
+                            </div>
+                            <input name="phone_number" type="text" class="form-control input-square mt-2"
+                                   id="PhoneNumberInput" placeholder="Enter New Phone Number" hidden>
+                            <hr>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="form-group">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch"
+                                       id="flexSwitchPassword"
+                                       onchange="toggleInput('passwordInput', 'confirmPasswordInput')">
+                                <label class="form-check-label" for="flexSwitchPassword">Change Password</label>
+                            </div>
+                            <input name="password" type="password" class="form-control input-square mt-2"
+                                   id="passwordInput" placeholder="Enter New Password" hidden>
+                            <input name="confirm_password" type="password" class="form-control input-square mt-2"
+                                   id="confirmPasswordInput" placeholder="Confirm New Password" hidden>
+                            <hr>
+                        </div>
+                    </div>
+
+                    <div class="card-footer text-right">
+                        <button type="button" class="btn btn-outline-danger" onclick="window.history.back(); return false;">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-outline-success">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleInput(...inputIds) {
+            inputIds.forEach(id => {
+                const input = document.getElementById(id);
+                input.hidden = !input.hidden;
+            });
+        }
+
+        function toggleAllInputs() {
+            const checkboxes = document.querySelectorAll('.card-body .form-check-input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = !checkbox.checked;
+                checkbox.onchange();
+            });
+        }
+    </script>
+
+{% endblock %}
