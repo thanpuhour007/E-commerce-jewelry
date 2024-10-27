@@ -9,6 +9,8 @@ __pycache__/
 # Adjust the paths below according to your project structure
 
 myadmin/static/products/
+myadmin/static/products/images
+myadmin/static/products/thumbnails
 myadmin/static/user_pictures/
 
 # Ignore log files
