@@ -1,26 +1,26 @@
-# Ignore Python bytecode
-__pycache__/
-*.py[cod]
-
-# Ignore environment variables
-.env
-
-# Ignore static files (local paths can be relative)
-# Adjust the paths below according to your project structure
-
-myadmin/static/products/
-myadmin/static/user_pictures/
-
-# Ignore log files
-*.log
-
-# Ignore SQLite database files
-*.sqlite3
-
-# Ignore compiled files
-*.pyc
-*.pyo
-
-# Ignore virtual environment
-venv/
-env/
+## Ignore Python bytecode
+#__pycache__/
+#*.py[cod]
+#
+## Ignore environment variables
+#.env
+#
+## Ignore static files (local paths can be relative)
+## Adjust the paths below according to your project structure
+#
+#myadmin/static/products/
+#myadmin/static/user_pictures/
+#
+## Ignore log files
+#*.log
+#
+## Ignore SQLite database files
+#*.sqlite3
+#
+## Ignore compiled files
+#*.pyc
+#*.pyo
+#
+## Ignore virtual environment
+#venv/
+#env/
